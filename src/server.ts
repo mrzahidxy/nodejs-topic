@@ -1,29 +1,44 @@
-import app from './app';
+import cluster from 'cluster';
+import { cpus } from 'os';
 import logger from './utils/logger';
-import dotenv from 'dotenv';
+import app from './app';
 
-dotenv.config(); // Loads environment variables from a .env file.
-
-const PORT = parseInt(process.env.PORT || '3000', 10);
-
-// Start the server and log that it's running
-const server = app.listen(PORT, () => logger.info(`Server running on port ${PORT}`));
+const numCPUs = cpus().length;
 
 // Graceful shutdown function
-const shutdown = () => {
-  logger.info('Shutting down server...');
+const shutdown = (server: any) => {
   server.close(() => {
-    logger.info('Server closed.');
+    logger.info('Server closed');
     process.exit(0);
   });
 
-  // Force shutdown after 10 seconds if not closed
   setTimeout(() => {
-    logger.warn('Forcing shutdown...');
+    logger.warn('Forced shutdown');
     process.exit(1);
   }, 10000);
 };
 
-// Listen for system termination signals to gracefully shutdown
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+if (cluster.isPrimary) {
+  logger.info(`Primary process PID: ${process.pid}`);
+
+  // Fork worker processes
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker) => {
+    logger.info(`Worker ${worker.process.pid} exited`);
+  });
+
+  process.on('SIGTERM', () => process.exit(0));
+  process.on('SIGINT', () => process.exit(0));
+
+} else {
+  const server = app.listen(3000, () => {
+    logger.info(`Worker ${process.pid} running on port 3000`);
+  });
+
+  // Graceful shutdown for workers
+  process.on('SIGTERM', () => shutdown(server));
+  process.on('SIGINT', () => shutdown(server));
+}

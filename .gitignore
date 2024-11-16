@@ -1,0 +1,7 @@
+# Ignore dist directory
+/dist/
+
+# Other common files to ignore
+/node_modules/
+/*.log
+*.env

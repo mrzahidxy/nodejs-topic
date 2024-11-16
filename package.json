@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc",
-    "dev:workers": "tsc src/workers/compressWorker.ts --outDir dist/workers",
-    "dev": "npm run dev:workers && nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts"
+    "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts"
   },
   "author": "Zahid",
   "license": "ISC",
