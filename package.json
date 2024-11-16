@@ -1,0 +1,30 @@
+{
+  "name": "nodejs-worker-demo",
+  "version": "1.0.0",
+  "description": "Demo of using Worker Threads for CPU-intensive tasks, with real-world data compression",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "dev:workers": "tsc src/workers/compressWorker.ts --outDir dist/workers",
+    "dev": "npm run dev:workers && nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts"
+  },
+  "author": "Zahid",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "piscina": "^4.7.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/express-rate-limit": "^6.0.2",
+    "@types/node": "^18.19.64",
+    "@types/winston": "^2.4.4",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
